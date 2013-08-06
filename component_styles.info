@@ -1,0 +1,6 @@
+name = Component Styles
+description = "Provides a framework for using Panels styles to provide
+multiple styling options"
+core = 7.x
+
+dependencies = panels

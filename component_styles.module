@@ -1,0 +1,109 @@
+<?php
+
+function component_styles_ctools_plugin_directory($module, $plugin) {
+  if ($module == 'page_manager' || $module == 'panels') {
+    return 'plugins/' . $plugin;
+  }
+}
+
+/**
+ * title
+description
+callbacks:
+  form_simple:
+  form_advanced:
+  preprocess:
+  render_simple:
+  render_advanced:
+  postprocess:
+advanced_description
+include:
+    module:
+    file:
+    ext:
+ */
+function component_styles_get_form_categories() {
+  global $language;
+  $cstyles = drupal_static(__FUNCTION__, array());
+  if (empty($cstyles)) {
+    $cached = cache_get(__FUNCTION__);
+    $cached = null;
+    if (!empty($cached)) {
+      $cstyles = $cached->data;
+    }
+  }
+  if (empty($cstyles[$language->language])) {
+    $cstyles[$language->language] = module_invoke_all('component_styles');
+    drupal_alter('component_styles', $cstyles[$language->language]);
+    cache_set(__FUNCTION__, $cstyles);
+  }
+  return $cstyles[$language->language];
+}
+
+function component_styles_permissions() {
+  return array(
+    'component styles advanced' => array(
+      'title' => t('Advanced Styling Options'),
+      'description' => t('Allows the user to make advanced styling
+        decisions in this module.'),
+    ),
+  );
+}
+
+function component_styles_theme() {
+  return array(
+    'component_styles_widget' => array(
+      'render element' => 'component_styles_widget',
+      'file' => 'component_styles.theme.inc',
+    ),
+  );
+}
+
+/**
+ * 
+ * Uses $options (which contains CSS/JS files and CSS classes) to
+ * append data to the $content render array.
+ * 
+ * @param type $options
+ * @param type $content
+ */
+function _component_styles_render_helper($options, &$content) {
+  $adjusted = array(
+    '#classes' => array(),
+    '#parent_classes' => array(),
+    '#ignore_classes' => array(),
+    '#parent_ignore_classes' => array(),
+    '#attach' => array(
+      'js' => array(),
+      'css' => array(),
+    ),
+  );
+  if (!empty($options['classes'])) {
+    $adjusted['#classes'] = is_array($options['classes']) ? $options['classes'] : array($options['classes']);
+  }
+  if (!empty($options['parent classes'])) {
+    $adjusted['#parent_classes'] = is_array($options['parent classes']) ? $options['parent classes'] : array($options['parent classes']);
+    $options['use parent wrapper'] = TRUE;
+  }
+  if (!empty($options['js'])) {
+    $adjusted['#attach']['js'] = is_array($options['js']) ? $options['js'] : array($options['js']);
+  }
+  if (!empty($options['css'])) {
+    $adjusted['#attach']['css'] = is_array($options['css']) ? $options['css'] : array($options['css']);
+  }
+  if (!empty($options['remove classes'])) {
+    $adjusted['#ignore_classes'] = is_array($options['remove classes']) ? $options['remove classes'] : array($options['remove classes']);
+  }
+  if (!empty($options['remove parent classes'])) {
+    $adjusted['#parent_ignore_classes'] = is_array($options['remove parent classes']) ? $options['remove parent classes'] : array($options['remove parent classes']);
+  }
+  foreach ($adjusted as $key => $value) {
+    $content['cs_render_div'][$key] = array_merge_recursive($content['cs_render_div'][$key], $value);
+  }
+  if (!empty($options['use content wrapper'])) {
+    $content['cs_render_div']['#content_wrapper'] = TRUE;
+  }
+  if (!empty($options['use parent wrapper'])) {
+    $content['cs_render_div']['#parent_wrapper'] = TRUE;
+  }
+}
