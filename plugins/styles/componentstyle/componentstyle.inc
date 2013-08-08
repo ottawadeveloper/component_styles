@@ -91,6 +91,8 @@ function theme_componentstyle_render_pane($vars) {
       '#parent_ignore_classes' => array(),
       '#classes' => array(),
       '#ignore_classes' => array(),
+      '#wrapper_classes' => array(),
+      '#wrapper_ignore_classes' => array(),
       'content' => array(),
     ),
   );
@@ -122,14 +124,14 @@ function theme_componentstyle_render_pane($vars) {
     if ($render_settings['#cs_render_simple']) {
       $simple = component_styles_get_callback($category, 'render_simple');
       if (!empty($simple)) {
-        $simple($render_settings['#cs_simple_settings'], $content);
+        $simple($render_settings['#cs_simple_settings'], $content, $render_settings);
       }
     }
     
     if ($render_settings['#cs_render_advanced']) {
       $advanced = component_styles_get_callback($category, 'render_advanced');
       if (!empty($advanced)) {
-        $advanced($render_settings['#cs_advanced_settings'], $content);
+        $advanced($render_settings['#cs_advanced_settings'], $content, $render_settings);
       }
     }
     

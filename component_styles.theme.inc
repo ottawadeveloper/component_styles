@@ -53,12 +53,19 @@ function theme_component_styles_widget($vars) {
     }
   }
   if (!empty($element['#content_wrapper'])) {
+    $wrapper_classes = array();
+    if (!empty($element['#wrapper_classes'])) {
+      $ignore = empty($element['#wrapper_ignore_classes']) ? array() : 
+          $element['#wrapper_ignore_classes'];
+      $wrapper_classes = _component_styles_class_helper($element['#wrapper_classes'], $ignore);
+    }
+    $wrapper_classes[] = 'cs-content-wrapper';
     $content = $element['content'];
     $element['content'] = array(
       '#type' => 'html_tag',
       '#tag' => !empty($element['#wrapper_tag']) ? $element['#wrapper_tag'] : 'div',
       '#attributes' => array(
-        'class' => 'cs-content-wrapper',
+        'classes' => implode(' ', $wrapper_classes),
       ),
       '#value' => drupal_render($content),
     );
@@ -85,7 +92,7 @@ function theme_component_styles_widget($vars) {
         '#tag' => !empty($element['#parent_tag']) ? $element['#parent_tag'] : 'div',
         '#type' => 'html_tag',
         '#attributes' => array(
-          'class' => $parent_classes,
+          'class' => implode(' ', $parent_classes),
         ),
       ),
     ));

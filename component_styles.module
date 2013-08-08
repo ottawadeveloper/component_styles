@@ -73,17 +73,23 @@ function _component_styles_render_helper($options, &$content) {
     '#parent_classes' => array(),
     '#ignore_classes' => array(),
     '#parent_ignore_classes' => array(),
+    '#wrapper_classes' => array(),
+    '#wrapper_ignore_classes' => array(),
     '#attach' => array(
       'js' => array(),
       'css' => array(),
     ),
   );
   if (!empty($options['classes'])) {
-    $adjusted['#classes'] = is_array($options['classes']) ? $options['classes'] : array($options['classes']);
+    $adjusted['#classes'] = is_array($options['classes']) ? $options['classes'] : explode(' ', $options['classes']);
   }
   if (!empty($options['parent classes'])) {
-    $adjusted['#parent_classes'] = is_array($options['parent classes']) ? $options['parent classes'] : array($options['parent classes']);
+    $adjusted['#parent_classes'] = is_array($options['parent classes']) ? $options['parent classes'] : explode(' ', $options['parent classes']);
     $options['use parent wrapper'] = TRUE;
+  }
+  if (!empty($options['wrapper classes'])) {
+    $adjusted['#wrapper_classes'] = is_array($options['wrapper classes']) ? $options['wrapper classes'] : explode(' ', $options['wrapper classes']);
+    $options['use content wrapper'] = TRUE;
   }
   if (!empty($options['js'])) {
     $adjusted['#attach']['js'] = is_array($options['js']) ? $options['js'] : array($options['js']);
@@ -92,10 +98,13 @@ function _component_styles_render_helper($options, &$content) {
     $adjusted['#attach']['css'] = is_array($options['css']) ? $options['css'] : array($options['css']);
   }
   if (!empty($options['remove classes'])) {
-    $adjusted['#ignore_classes'] = is_array($options['remove classes']) ? $options['remove classes'] : array($options['remove classes']);
+    $adjusted['#ignore_classes'] = is_array($options['remove classes']) ? $options['remove classes'] : explode(' ', $options['remove classes']);
   }
   if (!empty($options['remove parent classes'])) {
-    $adjusted['#parent_ignore_classes'] = is_array($options['remove parent classes']) ? $options['remove parent classes'] : array($options['remove parent classes']);
+    $adjusted['#parent_ignore_classes'] = is_array($options['remove parent classes']) ? $options['remove parent classes'] : explode(' ', $options['remove parent classes']);
+  }
+  if (!empty($options['remove wrapper classes'])) {
+    $adjusted['#wrapper_ignore_classes'] = is_array($options['remove wrapper classes']) ? $options['remove wrapper classes'] : explode(' ', $options['remove wrapper classes']);
   }
   foreach ($adjusted as $key => $value) {
     $content['cs_render_div'][$key] = array_merge_recursive($content['cs_render_div'][$key], $value);
