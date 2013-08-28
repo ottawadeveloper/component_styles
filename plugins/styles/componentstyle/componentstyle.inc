@@ -64,7 +64,7 @@ function _componentstyle_settings_form($settings, $type) {
       if (!empty($category['description'])) {
         $form[$categoryid]['#description'] = $category['description'];
       }
-      $form[$categoryid] += $simple_form($settings[$categoryid]);
+      $form[$categoryid] += $simple_form($settings[$categoryid], $type);
     }
     $advanced_form = component_styles_get_callback($category, 'form_advanced');
     if (!empty($advanced_form)) {
@@ -82,7 +82,7 @@ function _componentstyle_settings_form($settings, $type) {
       if (!empty($category['advanced_description'])) {
         $form['advanced_settings'][$categoryid]['#description'] = $category['advanced_description'];
       }
-      $form['advanced_settings'][$categoryid] += $advanced_form($settings['advanced_settings'][$categoryid]);
+      $form['advanced_settings'][$categoryid] += $advanced_form($settings['advanced_settings'][$categoryid], $type);
     }
   }
   return $form;
@@ -127,6 +127,7 @@ function _component_styles_apply_settings(&$content, $settings, $type) {
   $categories = component_styles_get_form_categories($type);
   foreach ($categories as $categoryid => $category) {
     $render_settings = array(
+      '#type' => $type,
       '#cs_render_simple' => TRUE,
       '#cs_render_advanced' => TRUE,
       '#cs_simple_settings' => isset($settings[$categoryid]) ? 

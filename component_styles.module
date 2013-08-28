@@ -32,12 +32,12 @@ function component_styles_get_form_categories($type) {
       $cstyles = $cached->data;
     }
   }
-  if (empty($cstyles[$language->language])) {
-    $cstyles[$language->language] = module_invoke_all('component_styles');
-    drupal_alter('component_styles', $cstyles[$language->language]);
+  if (empty($cstyles[$type][$language->language])) {
+    $cstyles[$type][$language->language] = module_invoke_all('component_styles', $type);
+    drupal_alter('component_styles', $cstyles[$type][$language->language], $type);
     cache_set(__FUNCTION__, $cstyles);
   }
-  return $cstyles[$language->language];
+  return $cstyles[$type][$language->language];
 }
 
 function component_styles_permissions() {
