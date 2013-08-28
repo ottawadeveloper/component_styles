@@ -5,7 +5,7 @@ $plugin = array(
     'title' => t('Component Styles'),
     'description' => t('Provides a flexible Panels styles implementation'),
     'render pane' => 'componentstyle_render_pane',
-    'render region' => 'componentstyle_render_pane',
+    'render region' => 'componentstyle_render_region',
     'pane settings form' => 'componentstyle_settings_form',
     'settings form' => 'componentstyle_settings_form',
   ),
@@ -42,6 +42,9 @@ function componentstyle_settings_form($settings) {
   foreach ($categories as $categoryid => $category) {
     $simple_form = component_styles_get_callback($category, 'form_simple');
     if (!empty($simple_form)) {
+      if (empty($settings[$categoryid])) {
+        $settings[$categoryid] = array();
+      }
       $form[$categoryid] = array(
         '#tree' => TRUE,
         '#type' => 'fieldset',
@@ -57,6 +60,9 @@ function componentstyle_settings_form($settings) {
     }
     $advanced_form = component_styles_get_callback($category, 'form_advanced');
     if (!empty($advanced_form)) {
+      if (empty($settings['advanced_settings'][$categoryid])) {
+        $settings['advanced_settings'][$categoryid] = array();
+      }
       $form['advanced_settings'][$categoryid] = array(
         '#tree' => TRUE,
         '#type' => 'fieldset',
@@ -74,9 +80,8 @@ function componentstyle_settings_form($settings) {
   return $form;
 }
 
-function theme_componentstyle_render_pane($vars) {
-  $categories = component_styles_get_form_categories();
-  $content = array(
+function _component_styles_default_render_array($content) {
+  $render = array(
     'cs_render_div' => array(
       '#type' => 'component_styles_widget',
       '#theme' => 'component_styles_widget',
@@ -98,25 +103,29 @@ function theme_componentstyle_render_pane($vars) {
       'content' => array(),
     ),
   );
-  if (!is_array($vars['content']->content)) {
-    $content['cs_render_div']['content'] = array(
+  if (!is_array($content)) {
+    $render['cs_render_div']['content'] = array(
       '#type' => 'markup',
-      '#markup' => $vars['content']->content,
+      '#markup' => $content,
     );
-  } 
-  else {
-    $content['cs_render_div']['content'] = $vars['content']->content;
   }
+  else {
+    $render['cs_render_div']['content'] = $content;
+  }
+  return $render;
+}
+
+function _component_styles_apply_settings(&$content, $settings) {
+  $categories = component_styles_get_form_categories();
   foreach ($categories as $categoryid => $category) {
-    
     $render_settings = array(
       '#cs_render_simple' => TRUE,
       '#cs_render_advanced' => TRUE,
-      '#cs_simple_settings' => isset($vars['settings'][$categoryid]) ? 
-          $vars['settings'][$categoryid] : array(),
-      '#cs_advanced_settings' => isset($vars['settings']['advanced_settings'][$categoryid]) ? 
-          $vars['settings']['advanced_settings'][$categoryid] : array(),
-    ) + $vars;
+      '#cs_simple_settings' => isset($settings[$categoryid]) ? 
+          $settings[$categoryid] : array(),
+      '#cs_advanced_settings' => isset($settings['advanced_settings'][$categoryid]) ? 
+          $settings['advanced_settings'][$categoryid] : array(),
+    ) + $settings;
     
     $preprocess = component_styles_get_callback($category, 'preprocess');
     if (!empty($preprocess)) {
@@ -142,5 +151,26 @@ function theme_componentstyle_render_pane($vars) {
       $postprocess($render_settings, $content);
     }
   }
+}
+
+function theme_componentstyle_render_region($vars) {
+  
+  $content = '';
+  foreach ($vars['panes'] as $pane) {
+    if (is_array($pane)) {
+      $content .= render($pane);
+    }
+    else {
+      $content .= $pane;
+    }
+  }
+  $rarray = _component_styles_default_render_array($content);
+  _component_styles_apply_settings($rarray, $vars['settings']);
+  return render($rarray);
+}
+
+function theme_componentstyle_render_pane($vars) {
+  $content = _component_styles_default_render_array($vars['content']->content);
+  _component_styles_apply_settings($content, $vars['settings']);
   return render($content);
 }
