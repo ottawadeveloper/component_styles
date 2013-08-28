@@ -134,7 +134,9 @@ function _component_styles_apply_settings(&$content, $settings, $type) {
           $settings[$categoryid] : array(),
       '#cs_advanced_settings' => isset($settings['advanced_settings'][$categoryid]) ? 
           $settings['advanced_settings'][$categoryid] : array(),
-    ) + $settings;
+      'settings' => $settings,
+      'content' => $content,
+    );
     
     $preprocess = component_styles_get_callback($category, 'preprocess');
     if (!empty($preprocess)) {
