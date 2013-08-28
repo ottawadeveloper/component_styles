@@ -65,7 +65,7 @@ function theme_component_styles_widget($vars) {
       '#type' => 'html_tag',
       '#tag' => !empty($element['#wrapper_tag']) ? $element['#wrapper_tag'] : 'div',
       '#attributes' => array(
-        'classes' => implode(' ', $wrapper_classes),
+        'class' => implode(' ', $wrapper_classes),
       ),
       '#value' => drupal_render($content),
     );
