@@ -6,8 +6,8 @@ $plugin = array(
     'description' => t('Provides a flexible Panels styles implementation'),
     'render pane' => 'componentstyle_render_pane',
     'render region' => 'componentstyle_render_region',
-    'pane settings form' => 'componentstyle_settings_form',
-    'settings form' => 'componentstyle_settings_form',
+    'pane settings form' => 'componentstyle_settings_form_pane',
+    'settings form' => 'componentstyle_settings_form_region',
   ),
 );
 
@@ -27,7 +27,15 @@ function component_styles_get_callback(&$category, $callback) {
   return NULL;
 }
 
-function componentstyle_settings_form($settings) {
+function componentstyle_settings_form_pane($settings) {
+  return _componentstyle_settings_form($settings, 'pane');
+}
+
+function componentstyle_settings_form_region($settings) {
+  return _componentstyle_settings_form($settings, 'region');
+}
+
+function _componentstyle_settings_form($settings, $type) {
   $form = array();
   $form['advanced_settings'] = array(
     '#type' => 'fieldset',
@@ -38,7 +46,7 @@ function componentstyle_settings_form($settings) {
     '#tree' => TRUE,
     '#weight' => 100,
   );
-  $categories = component_styles_get_form_categories();
+  $categories = component_styles_get_form_categories($type);
   foreach ($categories as $categoryid => $category) {
     $simple_form = component_styles_get_callback($category, 'form_simple');
     if (!empty($simple_form)) {
@@ -115,8 +123,8 @@ function _component_styles_default_render_array($content) {
   return $render;
 }
 
-function _component_styles_apply_settings(&$content, $settings) {
-  $categories = component_styles_get_form_categories();
+function _component_styles_apply_settings(&$content, $settings, $type) {
+  $categories = component_styles_get_form_categories($type);
   foreach ($categories as $categoryid => $category) {
     $render_settings = array(
       '#cs_render_simple' => TRUE,
@@ -165,12 +173,12 @@ function theme_componentstyle_render_region($vars) {
     }
   }
   $rarray = _component_styles_default_render_array($content);
-  _component_styles_apply_settings($rarray, $vars['settings']);
+  _component_styles_apply_settings($rarray, $vars['settings'], 'region');
   return render($rarray);
 }
 
 function theme_componentstyle_render_pane($vars) {
   $content = _component_styles_default_render_array($vars['content']->content);
-  _component_styles_apply_settings($content, $vars['settings']);
+  _component_styles_apply_settings($content, $vars['settings'], 'pane');
   return render($content);
 }

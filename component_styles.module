@@ -22,7 +22,7 @@ include:
     file:
     ext:
  */
-function component_styles_get_form_categories() {
+function component_styles_get_form_categories($type) {
   global $language;
   $cstyles = drupal_static(__FUNCTION__, array());
   if (empty($cstyles)) {
