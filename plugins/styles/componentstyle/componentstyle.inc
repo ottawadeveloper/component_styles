@@ -5,7 +5,9 @@ $plugin = array(
     'title' => t('Component Styles'),
     'description' => t('Provides a flexible Panels styles implementation'),
     'render pane' => 'componentstyle_render_pane',
+    'render region' => 'componentstyle_render_pane',
     'pane settings form' => 'componentstyle_settings_form',
+    'settings form' => 'componentstyle_settings_form',
   ),
 );
 
