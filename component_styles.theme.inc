@@ -82,7 +82,7 @@ function theme_component_styles_widget($vars) {
   if (!empty($element['#parent_wrapper'])) {
     $parent_classes = array();
     if (!empty($element['#parent_classes'])) {
-      $ignore = empty($element['#parent_ignore_classes']) ? array() : $element['#parent_ignore_classse'];
+      $ignore = empty($element['#parent_ignore_classes']) ? array() : $element['#parent_ignore_classes'];
       $parent_classes = _component_styles_class_helper($element['#parent_classes'], $ignore);
     }
     $parent_classes[] = 'cs-parent-wrapper';
