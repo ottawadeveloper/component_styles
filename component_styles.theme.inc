@@ -4,6 +4,9 @@ function _component_styles_class_helper($classes, $ignore = NULL) {
   if (!is_array($classes)) {
     $classes = array($classes);
   }
+  else {
+    $classes = array_unique($classes);
+  }
   if (empty($ignore)) { return $classes; }
   if (!is_array($ignore)) {
     $ignore = array($ignore);
