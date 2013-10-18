@@ -80,6 +80,15 @@ function _component_styles_render_helper($options, &$content) {
       'css' => array(),
     ),
   );
+  if (!empty($options['tag'])) {
+    $content['cs_render_div']['#tag'] = $options['tag'];
+  }
+  if (!empty($options['parent tag'])) {
+    $content['cs_render_div']['#parent_tag'] = $options['parent tag'];
+  }
+  if (!empty($options['wrapper tag'])) {
+    $content['cs_render_div']['#wrapper_tag'] = $options['wrapper tag'];
+  }
   if (!empty($options['classes'])) {
     $adjusted['#classes'] = is_array($options['classes']) ? $options['classes'] : explode(' ', $options['classes']);
   }
