@@ -1,5 +1,25 @@
 <?php
+/**
+ * @file
+ * Contains default theme implementations.
+ */
 
+/**
+ * Helper function for theme_component_styles_widget() that
+ * knows how to take a classes array and an ignore classes array
+ * and assemble them into a complete array of classes. Also 
+ * deduplicates the classnames.
+ * 
+ * @param array $classes
+ *   An array of classnames that should be present.
+ * 
+ * @param array $ignore
+ *   An array of classnames that should not be present, even if
+ *   they are in $classes.
+ * 
+ * @return array
+ *   The filtered array of class names.
+ */
 function _component_styles_class_helper($classes, $ignore = NULL) {
   if (!is_array($classes)) {
     $classes = array($classes);
@@ -21,11 +41,46 @@ function _component_styles_class_helper($classes, $ignore = NULL) {
 }
 
 /**
- * render array:
- * #classes => array of classes
- * #attach[js] => array of JS files to attach
- * #attach[css] => array of CSS files to attach
- * #children => child elements
+ * Default theme callback for a component styles widget.
+ * 
+ * This should return up to three nested containers with the
+ * content inside:
+ * 
+ * parent wrapper:
+ *   container:
+ *     content wrapper:
+ * 
+ * @param array $vars
+ *   The component styles variables:
+ *   - component_styles_widget
+ *     - #tag: The tag to use to display.
+ *     - #classes: An array of classes for the container.
+ *     - #ignore_classes: An array of classes to ignore on the 
+ *       container.
+ *     - #attach:
+ *       - js: An array of JS files to attach.
+ *       - css: An array of CSS files to attach.
+ *     - #content_wrapper: Will be not empty if a content wrapper
+ *       was requested.
+ *     - #wrapper_classes: Classes for the content wrapper.
+ *     - #wrapper_ignore_classes: Classes that must not be on the
+ *       content wrapper.
+ *     - #wrapper_tag: The tag to use for the content wrapper.
+ *     - #parent_wrapper: Will be not empty if a parent wrapper
+ *       was requested.
+ *     - #parent_classes: Classes for the parent wrapper.
+ *     - #parent_ignore_classes: Classes that must not be on the
+ *       parent wrapper.
+ *     - #parent_tag: The tag to use for the parent wrapper.
+ *     - #children: Inner content for the container/content wrapper.
+ * 
+ * @return string
+ *   HTML as returned by theme_html_tag().
+ * 
+ * @todo Perhaps this should be broken into three different theme
+ *   functions?
+ * 
+ * @ingroup themeable
  */
 function theme_component_styles_widget($vars) {
   $element = $vars['component_styles_widget'];

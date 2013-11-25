@@ -1,8 +1,15 @@
 <?php
+/**
+ * @file
+ * Example API implementations for component styles.
+ */
 
 /**
  * Retrieves a list of information on how to build the form for
  * the component style.
+ * 
+ * @return array
+ *   An array of component style elements, keyed by name.
  */
 function hook_component_styles() {
   return array(

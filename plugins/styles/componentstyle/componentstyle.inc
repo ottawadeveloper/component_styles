@@ -1,5 +1,12 @@
 <?php
+/**
+ * @file
+ * This is a widget implementation for ctools.
+ */
 
+/**
+ * Faster way to declare the plugin.
+ */
 $plugin = array(
   'componentstyle' => array(
     'title' => t('Component Styles'),
@@ -11,30 +18,54 @@ $plugin = array(
   ),
 );
 
-function component_styles_get_callback(&$category, $callback) {
-  if (empty($category['_file_included'])) {
-    if (!empty($category['include'])) {
-      module_load_include($category['include']['ext'],
-          $category['include']['module'],
-          $category['include']['name']);
+/**
+ * Retrieves the callback for a given component style.
+ * 
+ * @param array $style_element
+ *   A style element from hook_component_styles().
+ * @param string $callback
+ *   The callback to retrieve.
+ * 
+ * @return string
+ *   The name of the callback function, or NULL if there is
+ *   no callback function.
+ */
+function component_styles_get_callback(&$style_element, $callback) {
+  if (empty($style_element['_file_included'])) {
+    if (!empty($style_element['include'])) {
+      module_load_include($style_element['include']['ext'],
+          $style_element['include']['module'],
+          $style_element['include']['name']);
     }
-    $category['_file_included'] = TRUE;
+    $style_element['_file_included'] = TRUE;
   }
-  if ((!empty($category['callbacks'][$callback])) &&
-      function_exists($category['callbacks'][$callback])) {
-    return $category['callbacks'][$callback];
+  if ((!empty($style_element['callbacks'][$callback])) &&
+      function_exists($style_element['callbacks'][$callback])) {
+    return $style_element['callbacks'][$callback];
   }
   return NULL;
 }
 
+/**
+ * Ctools content type callback for pane settings.
+ */
 function componentstyle_settings_form_pane($settings) {
-  return _componentstyle_settings_form($settings, 'pane');
+  return _componentstyle_settings_form($settings, COMPONENT_STYLES_TYPE_PANE);
 }
 
+/**
+ * Ctools content type callback for region settings.
+ */
 function componentstyle_settings_form_region($settings) {
-  return _componentstyle_settings_form($settings, 'region');
+  return _componentstyle_settings_form($settings, COMPONENT_STYLES_TYPE_REGION);
 }
 
+/**
+ * Ctools content type callback for settings.
+ * 
+ * @param string $type
+ *   One of the two TYPE constants for component styles.
+ */
 function _componentstyle_settings_form($settings, $type) {
   $form = array();
   $form['advanced_settings'] = array(
@@ -88,6 +119,15 @@ function _componentstyle_settings_form($settings, $type) {
   return $form;
 }
 
+/**
+ * Generates the default render array for component styles widget.
+ * 
+ * @param mixed $content
+ *   The content from the panels pane/region to style.
+ * 
+ * @return array
+ *   The default render array for that content.
+ */
 function _component_styles_default_render_array($content) {
   $render = array(
     'cs_render_div' => array(
@@ -123,6 +163,16 @@ function _component_styles_default_render_array($content) {
   return $render;
 }
 
+/**
+ * Applies settings to a render array for a given type.
+ * 
+ * @param array $content
+ *   The render array for the content.
+ * @param array $settings
+ *   Settings from the configuration form.
+ * @param string $type
+ *   One of the two type constants.
+ */
 function _component_styles_apply_settings(&$content, $settings, $type) {
   $categories = component_styles_get_form_categories($type);
   foreach ($categories as $categoryid => $category) {
@@ -164,8 +214,10 @@ function _component_styles_apply_settings(&$content, $settings, $type) {
   }
 }
 
+/**
+ * Ctools content type callback to render a region.
+ */
 function theme_componentstyle_render_region($vars) {
-  
   $content = '';
   foreach ($vars['panes'] as $pane) {
     if (is_array($pane)) {
@@ -176,12 +228,15 @@ function theme_componentstyle_render_region($vars) {
     }
   }
   $rarray = _component_styles_default_render_array($content);
-  _component_styles_apply_settings($rarray, $vars['settings'], 'region');
+  _component_styles_apply_settings($rarray, $vars['settings'], COMPONENT_STYLES_TYPE_REGION);
   return render($rarray);
 }
 
+/**
+ * Ctools content type callback to render a pane.
+ */
 function theme_componentstyle_render_pane($vars) {
   $content = _component_styles_default_render_array($vars['content']->content);
-  _component_styles_apply_settings($content, $vars['settings'], 'pane');
+  _component_styles_apply_settings($content, $vars['settings'], COMPONENT_STYLES_TYPE_PANE);
   return render($content);
 }

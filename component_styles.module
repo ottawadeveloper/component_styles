@@ -1,5 +1,23 @@
 <?php
+/**
+ * @file
+ * Contains hook implementations and commonly used functions for
+ * component styles.
+ */
 
+/**
+ * Constant for the pane type.
+ */
+define('COMPONENT_STYLES_TYPE_PANE', 'pane');
+
+/**
+ * Constant for the region type.
+ */
+define('COMPONENT_STYLES_TYPE_REGION', 'region');
+
+/**
+ * Implements hook_ctools_plugin_directory().
+ */
 function component_styles_ctools_plugin_directory($module, $plugin) {
   if ($module == 'page_manager' || $module == 'panels') {
     return 'plugins/' . $plugin;
@@ -7,28 +25,48 @@ function component_styles_ctools_plugin_directory($module, $plugin) {
 }
 
 /**
- * title
-description
-callbacks:
-  form_simple:
-  form_advanced:
-  preprocess:
-  render_simple:
-  render_advanced:
-  postprocess:
-advanced_description
-include:
-    module:
-    file:
-    ext:
+ * Implements hook_permissions().
  */
-function component_styles_get_form_categories($type) {
+function component_styles_permissions() {
+  return array(
+    'component styles advanced' => array(
+      'title' => t('Advanced Styling Options'),
+      'description' => t('Allows the user to make advanced styling
+        decisions in this module.'),
+    ),
+  );
+}
+
+/**
+ * Implements hook_theme().
+ */
+function component_styles_theme() {
+  return array(
+    'component_styles_widget' => array(
+      'render element' => 'component_styles_widget',
+      'file' => 'component_styles.theme.inc',
+    ),
+  );
+}
+
+/**
+ * Builds the list of component style form categories.
+ * 
+ * @param string $type 
+ *   Either "pane" or "region".
+ * @param boolean $reset
+ *   Set to TRUE to reset the caches.
+ * 
+ * @return array
+ *   An array of component styles information, translated
+ *   into the appropriate language for the current user interface.
+ */
+function component_styles_get_form_categories($type, $reset = FALSE) {
   global $language;
   $cstyles = drupal_static(__FUNCTION__, array());
-  if (empty($cstyles)) {
+  if ($reset || empty($cstyles)) {
     $cached = cache_get(__FUNCTION__);
-    $cached = null;
-    if (!empty($cached)) {
+    if ((!$reset) && (!empty($cached))) {
       $cstyles = $cached->data;
     }
   }
@@ -40,32 +78,31 @@ function component_styles_get_form_categories($type) {
   return $cstyles[$type][$language->language];
 }
 
-function component_styles_permissions() {
-  return array(
-    'component styles advanced' => array(
-      'title' => t('Advanced Styling Options'),
-      'description' => t('Allows the user to make advanced styling
-        decisions in this module.'),
-    ),
-  );
-}
-
-function component_styles_theme() {
-  return array(
-    'component_styles_widget' => array(
-      'render element' => 'component_styles_widget',
-      'file' => 'component_styles.theme.inc',
-    ),
-  );
-}
 
 /**
+ * Helper function to adjust the render array.
  * 
  * Uses $options (which contains CSS/JS files and CSS classes) to
  * append data to the $content render array.
  * 
- * @param type $options
- * @param type $content
+ * @param array $options
+ *   An array of options, including some or all of the following:
+ *   - use content wrapper: Render a wrapper around the content
+ *   - use parent wrapper: Render a wrapper around the widget container
+ *   - tag: The tag for the widget container
+ *   - parent tag: The tag for the wrapper around the container
+ *   - wrapper tag: The tag for the wrapper around the content
+ *   - classes: A single class (string) or an array of classes for
+ *     the widget container.
+ *   - parent classes: Classes for the wrapper around the container
+ *   - wrapper classes: Classes for the wrapper around the content
+ *   - js: one or more Javascript files to attach
+ *   - css: one or more CSS files to attach
+ *   - remove classes: Classes to remove from the widget container
+ *   - remove parent classes: Classes to remove from the parent wrapper
+ *   - remove wrapper classes: Classes to remove from the content wrapper
+ * @param array $content
+ *   The render array to adjust.
  */
 function _component_styles_render_helper($options, &$content) {
   $adjusted = array(
