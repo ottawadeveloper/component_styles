@@ -25,9 +25,9 @@ function component_styles_ctools_plugin_directory($module, $plugin) {
 }
 
 /**
- * Implements hook_permissions().
+ * Implements hook_permission().
  */
-function component_styles_permissions() {
+function component_styles_permission() {
   return array(
     'component styles advanced' => array(
       'title' => t('Advanced Styling Options'),
