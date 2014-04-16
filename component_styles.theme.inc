@@ -133,6 +133,7 @@ function theme_component_styles_widget($vars) {
       '#tag' => !empty($element['#tag']) ? $element['#tag'] : 'div',
       '#attributes' => array(
         'class' => implode(' ', $classes),
+        'id' => !empty($element['#id']) ? $element['#id'] : ''
       ),
       '#value' => drupal_render_children($element),
     ),
