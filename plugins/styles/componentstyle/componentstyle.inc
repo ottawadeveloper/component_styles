@@ -227,16 +227,28 @@ function theme_componentstyle_render_region($vars) {
       $content .= $pane;
     }
   }
-  $rarray = _component_styles_default_render_array($content);
-  _component_styles_apply_settings($rarray, $vars['settings'], COMPONENT_STYLES_TYPE_REGION);
-  return render($rarray);
+  $render = _component_styles_apply_all_settings($content, $vars['settings'], COMPONENT_STYLES_TYPE_REGION);
+  return render($render);
 }
 
 /**
  * Ctools content type callback to render a pane.
  */
 function theme_componentstyle_render_pane($vars) {
-  $content = _component_styles_default_render_array($vars['content']->content);
-  _component_styles_apply_settings($content, $vars['settings'], COMPONENT_STYLES_TYPE_PANE);
-  return render($content);
+  $render = _component_styles_apply_all_settings($vars['content']->content, $vars['settings'], COMPONENT_STYLES_TYPE_PANE);
+  return render($render);
+}
+
+function _component_styles_apply_all_settings($content, $settings, $type) {
+  if (!empty($content['#cs_wrap_children'])) {
+    foreach ($content['#cs_wrap_children'] as $index) {
+      if (isset($content[$index])) {
+        $content[$index] = _component_styles_apply_all_settings($content[$index], $settings, $type);
+      }
+    }
+    return $content;
+  }
+  $render = _component_styles_default_render_array($content);
+  _component_styles_apply_settings($render, $settings, $type);
+  return $render;
 }
