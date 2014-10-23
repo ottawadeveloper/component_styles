@@ -240,7 +240,7 @@ function theme_componentstyle_render_pane($vars) {
 }
 
 function _component_styles_apply_all_settings($content, $settings, $type) {
-  if (!empty($content['#cs_wrap_children'])) {
+  if (!empty($content['#cs_wrap_children']) && is_array($content['#cs_wrap_children'])) {
     foreach ($content['#cs_wrap_children'] as $index) {
       if (isset($content[$index])) {
         $content[$index] = _component_styles_apply_all_settings($content[$index], $settings, $type);
